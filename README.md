@@ -1,6 +1,6 @@
-# Compiler Construction - Four Independent Assignments
+# CSCI282L-2026spring
 
-This package contains four complete, independent programming assignments for teaching compiler construction. Each assignment builds progressively more sophisticated compiler features.
+This package contains four complete, independent programming assignments for teaching programming language lab. Each assignment builds progressively more sophisticated compiler features. This package is builded based on [UCSD CSE131/231](https://ucsd-compilers-s23.github.io/index.html). 
 
 ## 📦 Package Structure
 
