@@ -8,9 +8,9 @@ test/%.s: test/%.snek src/main.rs
 # Pattern rule to assemble .s files and link into executables
 # Change -f elf64 to -f macho64 on macOS
 test/%.run: test/%.s runtime/start.rs
-	nasm -f elf64 test/$*.s -o runtime/our_code.o
+	nasm -f macho64 test/$*.s -o runtime/our_code.o
 	ar rcs runtime/libour_code.a runtime/our_code.o
-	rustc -L runtime/ runtime/start.rs -o test/$*.run
+	rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/$*.run
 
 # Clean build artifacts
 clean:
@@ -18,11 +18,11 @@ clean:
 	rm -f test/*.s test/*.run runtime/*.o runtime/*.a
 
 # Run all tests
-test: test/37.run test/add.run test/negate.run test/complex.run
+test: test/basic.run test/increment.run test/flip.run test/nested.run
 	@echo "Running tests..."
-	@./test/37.run
-	@./test/add.run
-	@./test/negate.run
-	@./test/complex.run
+	@./test/basic.run
+	@./test/increment.run
+	@./test/flip.run
+	@./test/nested.run
 
 .PHONY: clean test
