@@ -1,0 +1,206 @@
+====================================================
+Command used: cd /Users/samadhi/Projects/CSCI282L/assignment1-adder && (for test in add1 basic complex deep example flip increment negate nested num sub1; do rm -f test/${test}.run runtime/our_code.o runtime/libour_code.a; echo "=== Test: ${test} ==="; cat test/${test}.snek; echo ""; echo "--- Generating & Showing Assembly ---"; make test/${test}.s 2>&1; cat test/${test}.s; echo ""; echo "--- Building & Running Executable ---"; make test/${test}.run 2>&1; ./test/${test}.run; echo ""; done) > transcript.txt 2>&1
+====================================================
+
+=== Test: add1 ===
+(add1 5)
+
+--- Generating & Showing Assembly ---
+make: `test/add1.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/add1.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/add1.run
+6
+
+=== Test: basic ===
+29
+
+--- Generating & Showing Assembly ---
+make: `test/basic.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 29
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/basic.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/basic.run
+29
+
+=== Test: complex ===
+(add1 (negate (sub1 20)))
+
+--- Generating & Showing Assembly ---
+make: `test/complex.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 20
+  sub rax, 1
+  imul rax, -1
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/complex.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/complex.run
+-18
+
+=== Test: deep ===
+(negate (add1 (sub1 (negate 5))))
+
+--- Generating & Showing Assembly ---
+make: `test/deep.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  imul rax, -1
+  sub rax, 1
+  add rax, 1
+  imul rax, -1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/deep.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/deep.run
+5
+
+=== Test: example ===
+42
+
+--- Generating & Showing Assembly ---
+make: `test/example.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 42
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/example.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/example.run
+42
+
+=== Test: flip ===
+(negate 15)
+
+--- Generating & Showing Assembly ---
+make: `test/flip.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 15
+  imul rax, -1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/flip.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/flip.run
+-15
+
+=== Test: increment ===
+(add1 12)
+
+--- Generating & Showing Assembly ---
+make: `test/increment.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 12
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/increment.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/increment.run
+13
+
+=== Test: negate ===
+(negate 7)
+
+--- Generating & Showing Assembly ---
+make: `test/negate.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 7
+  imul rax, -1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/negate.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/negate.run
+-7
+
+=== Test: nested ===
+(add1 (sub1 (negate 8)))
+
+--- Generating & Showing Assembly ---
+make: `test/nested.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 8
+  imul rax, -1
+  sub rax, 1
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/nested.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/nested.run
+-8
+
+=== Test: num ===
+37
+
+--- Generating & Showing Assembly ---
+make: `test/num.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 37
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/num.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/num.run
+37
+
+=== Test: sub1 ===
+(sub1 10)
+
+--- Generating & Showing Assembly ---
+make: `test/sub1.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 10
+  sub rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/sub1.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/sub1.run
+9
+
