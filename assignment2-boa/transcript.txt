@@ -1,0 +1,152 @@
+====================================================
+Command used: cd assignment2-boa/starter-code && (for test in simple add binop let_simple let_multi nested; do rm -f test/${test}.run runtime/our_code.o runtime/libour_code.a; echo "=== Test: ${test} ==="; cat test/${test}.snek; echo ""; echo "--- Generating & Showing Assembly ---"; make test/${test}.s 2>&1; cat test/${test}.s; echo ""; echo "--- Building & Running Executable ---"; nasm -f macho64 test/${test}.s -o runtime/our_code.o; ar rcs runtime/libour_code.a runtime/our_code.o; rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/${test}.run; arch -x86_64 ./test/${test}.run; echo ""; done) > transcript.txt 2>&1
+====================================================
+
+=== Test: simple ===
+42
+
+--- Generating & Showing Assembly ---
+make: `test/simple.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 42
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/simple.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/simple.run
+42
+
+=== Test: add ===
+(add1 (add1 (add1 3)))
+
+--- Generating & Showing Assembly ---
+cargo run -- test/add.snek test/add.s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `target/debug/boa test/add.snek test/add.s`
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 3
+  add rax, 1
+  add rax, 1
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/add.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/add.run
+6
+
+=== Test: binop ===
+(+ (* 2 3) 3)
+
+--- Generating & Showing Assembly ---
+cargo run -- test/binop.snek test/binop.s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `target/debug/boa test/binop.snek test/binop.s`
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 2
+  mov [rsp + -16], rax
+  mov rax, 3
+  imul rax, [rsp + -16]
+  mov [rsp + -16], rax
+  mov rax, 3
+  add rax, [rsp + -16]
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/binop.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/binop.run
+9
+
+=== Test: let_simple ===
+(let ((x 5)) (+ x x))
+
+--- Generating & Showing Assembly ---
+cargo run -- test/let_simple.snek test/let_simple.s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `target/debug/boa test/let_simple.snek test/let_simple.s`
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  add rax, [rsp + -24]
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/let_simple.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/let_simple.run
+10
+
+=== Test: let_multi ===
+(let ((x 5) (y 6)) (+ x y))
+
+--- Generating & Showing Assembly ---
+cargo run -- test/let_multi.snek test/let_multi.s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `target/debug/boa test/let_multi.snek test/let_multi.s`
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, 6
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -32], rax
+  mov rax, [rsp + -24]
+  add rax, [rsp + -32]
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/let_multi.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/let_multi.run
+11
+
+=== Test: nested ===
+(let ((x 5))
+  (let ((y (+ x 5)))
+    (+ x (* y 2))))
+
+--- Generating & Showing Assembly ---
+cargo run -- test/nested.snek test/nested.s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running `target/debug/boa test/nested.snek test/nested.s`
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -24], rax
+  mov rax, 5
+  add rax, [rsp + -24]
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -32], rax
+  mov rax, [rsp + -24]
+  mov [rsp + -40], rax
+  mov rax, 2
+  imul rax, [rsp + -40]
+  add rax, [rsp + -32]
+  ret
+
+--- Building & Running Executable ---
+nasm -f macho64 test/nested.s -o runtime/our_code.o
+ar rcs runtime/libour_code.a runtime/our_code.o
+rustc --target x86_64-apple-darwin -L runtime/ runtime/start.rs -o test/nested.run
+25
+

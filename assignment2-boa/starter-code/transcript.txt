@@ -1,0 +1,120 @@
+=== Test: simple ===
+42
+
+--- Generating & Showing Assembly ---
+make: `test/simple.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 42
+  ret
+
+--- Building & Running Executable ---
+42
+
+=== Test: add ===
+(add1 (add1 (add1 3)))
+
+--- Generating & Showing Assembly ---
+make: `test/add.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 3
+  add rax, 1
+  add rax, 1
+  add rax, 1
+  ret
+
+--- Building & Running Executable ---
+6
+
+=== Test: binop ===
+(+ (* 2 3) 3)
+
+--- Generating & Showing Assembly ---
+make: `test/binop.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 2
+  mov [rsp + -16], rax
+  mov rax, 3
+  imul rax, [rsp + -16]
+  mov [rsp + -16], rax
+  mov rax, 3
+  add rax, [rsp + -16]
+  ret
+
+--- Building & Running Executable ---
+9
+
+=== Test: let_simple ===
+(let ((x 5)) (+ x x))
+
+--- Generating & Showing Assembly ---
+make: `test/let_simple.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  add rax, [rsp + -24]
+  ret
+
+--- Building & Running Executable ---
+10
+
+=== Test: let_multi ===
+(let ((x 5) (y 6)) (+ x y))
+
+--- Generating & Showing Assembly ---
+make: `test/let_multi.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, 6
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -32], rax
+  mov rax, [rsp + -24]
+  add rax, [rsp + -32]
+  ret
+
+--- Building & Running Executable ---
+11
+
+=== Test: nested ===
+(let ((x 5))
+  (let ((y (+ x 5)))
+    (+ x (* y 2))))
+
+--- Generating & Showing Assembly ---
+make: `test/nested.s' is up to date.
+section .text
+global our_code_starts_here
+our_code_starts_here:
+  mov rax, 5
+  mov [rsp + -16], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -24], rax
+  mov rax, 5
+  add rax, [rsp + -24]
+  mov [rsp + -24], rax
+  mov rax, [rsp + -16]
+  mov [rsp + -32], rax
+  mov rax, [rsp + -24]
+  mov [rsp + -40], rax
+  mov rax, 2
+  imul rax, [rsp + -40]
+  add rax, [rsp + -32]
+  ret
+
+--- Building & Running Executable ---
+25
+
