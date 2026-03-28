@@ -819,4 +819,107 @@ mod tests {
         let a = asm_snippet(&ex);
         assert!(a.contains("add rax, 2"));
     }
+
+    #[test]
+    fn type_error_plus_bool_emits_snek_error() {
+        let e = Expr::BinOp(
+            BinOp::Plus,
+            Box::new(Expr::Bool(true)),
+            Box::new(Expr::Num(1)),
+        );
+        let a = asm_snippet(&e);
+        assert!(a.contains("call snek_error"));
+        assert!(a.contains("mov rdi, 1"));
+    }
+
+    #[test]
+    fn type_error_equal_mixed_tags_emits_snek_error() {
+        let e = Expr::BinOp(
+            BinOp::Equal,
+            Box::new(Expr::Num(1)),
+            Box::new(Expr::Bool(false)),
+        );
+        let a = asm_snippet(&e);
+        assert!(a.contains("call snek_error"));
+    }
+
+    #[test]
+    fn type_error_compare_non_numbers_emits_snek_error() {
+        let e = Expr::BinOp(
+            BinOp::Less,
+            Box::new(Expr::Bool(true)),
+            Box::new(Expr::Num(0)),
+        );
+        let a = asm_snippet(&e);
+        assert!(a.contains("call snek_error"));
+    }
+
+    #[test]
+    fn type_error_add1_on_bool_emits_snek_error() {
+        let e = Expr::UnOp(UnOp::Add1, Box::new(Expr::Bool(false)));
+        let a = asm_snippet(&e);
+        assert!(a.contains("call snek_error"));
+    }
+
+    #[test]
+    fn overflow_path_add1_emits_overflow_error() {
+        let e = Expr::UnOp(UnOp::Add1, Box::new(Expr::Num(1)));
+        let a = asm_snippet(&e);
+        assert!(a.contains("jo "));
+        assert!(a.contains("mov rdi, 2"));
+        assert!(a.contains("call snek_error"));
+    }
+
+    #[test]
+    fn emit_greater_and_greater_eq_use_correct_jumps() {
+        let g = Expr::BinOp(
+            BinOp::Greater,
+            Box::new(Expr::Num(2)),
+            Box::new(Expr::Num(1)),
+        );
+        assert!(asm_snippet(&g).contains("jg"));
+        let ge = Expr::BinOp(
+            BinOp::GreaterEq,
+            Box::new(Expr::Num(1)),
+            Box::new(Expr::Num(1)),
+        );
+        assert!(asm_snippet(&ge).contains("jge"));
+    }
+
+    #[test]
+    fn parse_readme_loop_example() {
+        let s = parse(
+            "(let ((x 0)) (loop (if (= x 10) (break x) (set! x (+ x 1)))))",
+        )
+        .unwrap();
+        let ex = parse_expr(&s);
+        assert!(matches!(ex, Expr::Let(_, _)));
+    }
+
+    #[test]
+    fn nested_if_compiles() {
+        let s = parse("(if true (if false 1 2) 3)").unwrap();
+        let a = asm_snippet(&parse_expr(&s));
+        assert!(a.contains("cmp rax, 1"));
+        assert!(a.contains("if_alt_"));
+    }
+
+    #[test]
+    fn set_in_inner_let_compiles() {
+        let s = parse("(let ((x 0)) (let ((y 1)) (block (set! x 5) (+ x y))))").unwrap();
+        let a = asm_snippet(&parse_expr(&s));
+        assert!(a.contains("[rsp -"));
+    }
+
+    #[test]
+    fn times_emits_overflow_check() {
+        let e = Expr::BinOp(
+            BinOp::Times,
+            Box::new(Expr::Num(1000)),
+            Box::new(Expr::Num(1000)),
+        );
+        let a = asm_snippet(&e);
+        assert!(a.contains("imul"));
+        assert!(a.contains("jo "));
+    }
 }

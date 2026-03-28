@@ -302,3 +302,7 @@ Submit:
 2. At least 20 test cases including error cases
 3. Documentation of tagging scheme
 4. Examples demonstrating all features
+
+### Reference implementation layout
+
+In this repository, the compiler lives under `starter-code/`. Tagging is documented in [`starter-code/TAGGING.md`](starter-code/TAGGING.md). Example programs covering literals, comparisons, `isnum`/`isbool`, `if`, `block`, `loop`/`break`, `set!`, `input`, nesting, and a runtime type error are under [`starter-code/examples/`](starter-code/examples/) (see `examples/README.md`). Run `cargo test` in `starter-code` for the automated suite.
