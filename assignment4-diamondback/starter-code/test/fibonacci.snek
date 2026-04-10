@@ -1,0 +1,6 @@
+((fun (fib n)
+   (if (<= n 1)
+       n
+       (+ (fib (sub1 n))
+          (fib (sub1 (sub1 n))))))
+ (fib 8))

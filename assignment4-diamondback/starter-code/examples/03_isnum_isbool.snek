@@ -1,0 +1,5 @@
+(block
+  (isnum 10)
+  (isbool false)
+  (isnum true)
+  (isbool 2))
